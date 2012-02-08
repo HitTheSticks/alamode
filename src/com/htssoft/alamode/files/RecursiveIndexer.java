@@ -1,8 +1,6 @@
 package com.htssoft.alamode.files;
 
 import java.io.File;
-import java.util.Stack;
-import java.util.Vector;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.htssoft.alamode.threading.ThreadingUtils;
@@ -20,6 +18,7 @@ public class RecursiveIndexer {
 		}
 		signatures = new SignaturePipeline(syncRoot, ThreadingUtils.getCoreCount());
 	}
+	
 	
 	public void go(){
 		if (targetRoot.isDirectory()){

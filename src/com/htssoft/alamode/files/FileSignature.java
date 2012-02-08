@@ -9,6 +9,18 @@ public class FileSignature {
 	protected final long length;
 	protected final String md5;
 	
+	public FileSignature(String line){
+		String[] splits = line.split(",");
+		name = splits[0].trim();
+		length = Long.parseLong(splits[1].trim());
+		if (length != 0){
+			md5 = splits[2].trim();
+		}
+		else {
+			md5 = "";
+		}
+	}
+	
 	public FileSignature(String name, long length, String md5){
 		this.name = name;
 		this.length = length;

@@ -2,18 +2,22 @@ package com.htssoft.alamode.threading;
 
 import java.util.Collection;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A threaded pipeline. You provide the kernel.
  * */
 public abstract class ThreadedPipeline<WORK_T, OUT_T> {
-	protected LinkedBlockingQueue<WORK_T> input = new LinkedBlockingQueue<WORK_T>();
+	protected LinkedBlockingQueue<WORK_T> input;
 	protected LinkedBlockingQueue<OUT_T> output = new LinkedBlockingQueue<OUT_T>();
 	
 	protected Thread[] threads;
 	
 	public ThreadedPipeline(int nThreads){
+		this(nThreads, new LinkedBlockingQueue<WORK_T>());
+	}
+	
+	public ThreadedPipeline(int nThreads, LinkedBlockingQueue<WORK_T> input){
+		this.input = input;
 		threads = new Thread[nThreads];
 		for (int i = 0; i < threads.length; i++){
 			threads[i] = new Thread(new Processor());
@@ -22,6 +26,13 @@ public abstract class ThreadedPipeline<WORK_T, OUT_T> {
 		}
 	}
 	
+	public void finalize(){
+		for (Thread t : threads){
+			if (t != null){
+				t.interrupt();
+			}
+		}
+	}
 	/**
 	 * Get the output queue.
 	 * */
@@ -76,7 +87,10 @@ public abstract class ThreadedPipeline<WORK_T, OUT_T> {
 					} catch (InterruptedException ex) {
 						break mainloop;
 					}
-					output.add(processItem(workItem));
+					OUT_T outItem = processItem(workItem);
+					if (outItem != null){
+						output.add(outItem);
+					}
 					if (input.isEmpty()){
 						synchronized (input){
 							input.notifyAll();

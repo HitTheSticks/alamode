@@ -12,6 +12,6 @@ public class Filenames {
 			throw new IllegalArgumentException("The target file is not a strict child of the root path.");
 		}
 		
-		return targetPath.substring(rootPath.length(), targetPath.length());
+		return targetPath.substring(rootPath.length() + 1, targetPath.length());
 	}
 }

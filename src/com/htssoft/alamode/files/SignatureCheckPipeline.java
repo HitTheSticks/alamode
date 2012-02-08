@@ -6,7 +6,7 @@ import java.security.NoSuchAlgorithmException;
 
 import com.htssoft.alamode.threading.ThreadedPipeline;
 
-public class SignaturePipeline extends ThreadedPipeline<File, FileSignature> {
+public class SignatureCheckPipeline extends ThreadedPipeline<FileSignature, String> {
 	protected ThreadLocal<FileHasher> hasher = new ThreadLocal<FileHasher>(){
 		public FileHasher initialValue(){
 			FileHasher retval = new FileHasher();
@@ -20,20 +20,24 @@ public class SignaturePipeline extends ThreadedPipeline<File, FileSignature> {
 	};
 	protected File syncRoot;
 	
-	public SignaturePipeline(File syncRoot, int nThreads) {
+	
+	public SignatureCheckPipeline(File syncRoot, int nThreads) {
 		super(nThreads);
 		this.syncRoot = syncRoot;
 	}
 
-	
 	@Override
-	protected FileSignature processItem(File item) {
+	protected String processItem(FileSignature item) {
+		File target = new File(syncRoot, item.getName());
 		try {
-			return hasher.get().hashFile(syncRoot, item);
+			FileSignature localSig = hasher.get().hashFile(syncRoot, target);
+			if (!item.equals(localSig)){
+				output.add(item.getName());
+			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 
 }
