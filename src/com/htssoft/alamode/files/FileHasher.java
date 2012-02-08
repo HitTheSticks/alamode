@@ -23,12 +23,13 @@ public class FileHasher {
 	}
 	
 	public FileSignature hashFile(File syncRoot, File queryFile) throws IOException {
+		if (!queryFile.exists() || queryFile.length() == 0){
+			return new FileSignature(Filenames.relativePath(syncRoot, queryFile), 0, "");
+		}
+		
 		FileInputStream fis = new FileInputStream(queryFile);
 		FileChannel chan = fis.getChannel();
 		
-		if (queryFile.length() == 0){
-			return new FileSignature(Filenames.relativePath(syncRoot, queryFile), 0, "");
-		}
 		
 		MappedByteBuffer byteBuffer = chan.map(MapMode.READ_ONLY, 0, queryFile.length());
 		
