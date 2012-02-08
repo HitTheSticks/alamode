@@ -67,8 +67,8 @@ public class FileHasher {
 		try {
 		fh.init();
 		
-		FileSignature fs = fh.hashFile(new File("."), new File("./dump.otree"));
-		System.out.println(fs);
+		FileSignature fs = fh.hashFile(new File("."), new File(args[0]));
+		System.out.println(fs.getMd5());
 		} catch (Exception ex){
 			ex.printStackTrace();
 		}

@@ -22,12 +22,12 @@ public class UpdateSite {
 		return new URL(String.format("%s/%s", urlFragment, filename));
 	}
 	
-	public int getRemoteVersion() throws IOException {
+	public String getRemoteVersion() throws IOException {
 		URL versionURL = getFileURL("version");
 		
 		HttpURLConnection conn = (HttpURLConnection) versionURL.openConnection();
 		if (conn.getResponseCode() != HttpURLConnection.HTTP_OK){
-			return -1;
+			throw new IOException("Bad HTTP response.");
 		}
 		
 		InputStream in = conn.getInputStream();
@@ -35,7 +35,7 @@ public class UpdateSite {
 		String line = br.readLine();
 		br.close();
 		
-		return Integer.parseInt(line);
+		return line;
 	}
 	
 	/**

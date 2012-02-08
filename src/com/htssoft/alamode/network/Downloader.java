@@ -1,0 +1,28 @@
+package com.htssoft.alamode.network;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+public class Downloader {
+	public static void download(File downloadDirectory, URL url, String filename) throws IOException{
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		InputStream in = conn.getInputStream();
+		
+		File outfile = new File(downloadDirectory, filename);
+		File directory = outfile.getParentFile();
+		if (!directory.exists()){
+			directory.mkdirs();
+		}
+		FileOutputStream fos = new FileOutputStream(outfile);
+		byte[] buffer = new byte[4096];
+		int read = 0;
+		while ((read = in.read(buffer)) >= 0){
+			fos.write(buffer, 0, read);	
+		}
+		fos.close();
+	}
+}

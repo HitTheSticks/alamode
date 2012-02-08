@@ -1,13 +1,9 @@
 package com.htssoft.alamode.network;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import com.htssoft.alamode.threading.FinishableQueue;
 import com.htssoft.alamode.threading.ThreadedPipeline;
@@ -37,22 +33,7 @@ public class DownloadPipeline extends ThreadedPipeline<String, Object>{
 	}
 	
 	
-	protected void download(URL url, String filename) throws IOException{
-		System.out.println(url.toString());
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		InputStream in = conn.getInputStream();
-		
-		File outfile = new File(downloadDirectory, filename);
-		File directory = outfile.getParentFile();
-		if (!directory.exists()){
-			directory.mkdirs();
-		}
-		FileOutputStream fos = new FileOutputStream(outfile);
-		byte[] buffer = new byte[4096];
-		int read = 0;
-		while ((read = in.read(buffer)) >= 0){
-			fos.write(buffer, 0, read);	
-		}
-		fos.close();
+	protected void download(URL url, String filename) throws IOException {
+		Downloader.download(downloadDirectory, url, filename);
 	}
 }

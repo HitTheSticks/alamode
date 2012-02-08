@@ -6,14 +6,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 
+import com.htssoft.alamode.files.FileHasher;
 import com.htssoft.alamode.files.FileSignature;
 import com.htssoft.alamode.files.SignatureCheckPipeline;
 import com.htssoft.alamode.network.DownloadPipeline;
+import com.htssoft.alamode.network.Downloader;
 import com.htssoft.alamode.network.FakeDownloadPipeline;
 import com.htssoft.alamode.network.UpdateSite;
 
@@ -34,26 +34,31 @@ public class UpdateService {
 		downloadDir = syncRoot;
 	}
 	
-	protected int getLocalVersion() throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader("./version"));
-		String vString = br.readLine();
-		br.close();
-		return Integer.parseInt(vString);
+	protected String getLocalVersion() throws IOException{
+		FileHasher hasher = new FileHasher();
+		try {
+			hasher.init();
+		}
+		catch (NoSuchAlgorithmException ex){
+			ex.printStackTrace();
+			return "";
+		}
+		
+		return hasher.hashFile(syncRoot, new File(syncRoot, "alamode.index")).getMd5();
 	}
 	
 	/**
 	 * Is the remote version greater than the local version?
 	 * */
 	public boolean startupCheck() throws IOException{
-		int remoteVersion = updateSite.getRemoteVersion();
-		int localVersion = -1;
-		try {
-			localVersion = getLocalVersion();
-		}
-		catch (IOException ex){
-			
-		}
-		return remoteVersion > localVersion;
+		String remoteVersion = updateSite.getRemoteVersion();
+		String localVersion = getLocalVersion();
+		
+		return !remoteVersion.equals(localVersion);
+	}
+	
+	public void getIndex() throws IOException{
+		Downloader.download(syncRoot, updateSite.getIndexURL(), "alamode.index");
 	}
 	
 	/**
@@ -68,9 +73,7 @@ public class UpdateService {
 		SignatureCheckPipeline sigCheck = new SignatureCheckPipeline(syncRoot, 4);
 		DownloadPipeline download = new DownloadPipeline(updateSite, downloadDir, 4, sigCheck.getOutputQueue());
 		
-		URL indexURL = updateSite.getIndexURL();
-		HttpURLConnection conn = (HttpURLConnection) indexURL.openConnection();
-		BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		BufferedReader br = new BufferedReader(new FileReader("alamode.index"));
 		String line;
 		
 		while ((line = br.readLine()) != null){
@@ -119,9 +122,9 @@ public class UpdateService {
 			UpdateService us = new UpdateService("alamode.prop");
 			boolean doUpdate = us.startupCheck();
 			if (doUpdate){
-				System.out.println("Updating...");
-				us.doUpdate();
+				us.getIndex();
 			}
+			us.doUpdate();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

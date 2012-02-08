@@ -4,7 +4,7 @@ package com.htssoft.alamode.files;
  * A file is known by its name, its length,
  * and its md5 hash.
  * */
-public class FileSignature {
+public class FileSignature implements Comparable<FileSignature>{
 	protected final String name;
 	protected final long length;
 	protected final String md5;
@@ -22,7 +22,7 @@ public class FileSignature {
 	}
 	
 	public FileSignature(String name, long length, String md5){
-		this.name = name;
+		this.name = name.replace('\\', '/');
 		this.length = length;
 		this.md5 = md5;
 	}
@@ -51,6 +51,11 @@ public class FileSignature {
 	
 	public String toString(){
 		return String.format("%s, %d, %s", name, length, md5);
+	}
+
+	@Override
+	public int compareTo(FileSignature o) {
+		return this.md5.compareTo(o.md5);
 	}
 
 }

@@ -3,7 +3,7 @@ package com.htssoft.alamode;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -43,8 +43,14 @@ public class IndexUtility {
 	}
 	
 	protected static void writeIndex(List<FileSignature> signatures) throws IOException{
+		FileWriter writer = new FileWriter("alamode.index");
+		Collections.sort(signatures);
 		for (FileSignature sig : signatures){
-			System.out.println(sig);
+			writer.append(sig.toString());
+			writer.append("\n");
 		}
+		writer.close();
+		
+		
 	}
 }

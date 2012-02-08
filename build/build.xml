@@ -7,7 +7,7 @@
 	<property name="target.dir" location="${basedir}/target" />
 	
 	<target name="clean">
-		<delete file="${target.dir}" />
+		<delete dir="${target.dir}" />
 		<delete file="${basedir}/alamode.jar" />
 		<delete file="${basedir}/scripts/alamode.jar" />
 	</target>
