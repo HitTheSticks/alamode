@@ -32,6 +32,7 @@ public class SignatureCheckPipeline extends ThreadedPipeline<FileSignature, Stri
 		try {
 			FileSignature localSig = hasher.get().hashFile(syncRoot, target);
 			if (!item.equals(localSig)){
+				System.out.println(String.format("%s -> %s", item.toString(), localSig.toString()));
 				output.add(item.getName());
 			}
 		} catch (IOException ex) {

@@ -3,5 +3,33 @@
 			Build the a la mode update system.
 	</description>
 	
+	<property name="src.dir" location="${basedir}/src" />
+	<property name="target.dir" location="${basedir}/target" />
 	
+	<target name="clean">
+		<delete file="${target.dir}" />
+		<delete file="${basedir}/alamode.jar" />
+		<delete file="${basedir}/scripts/alamode.jar" />
+	</target>
+	
+	<target name="init">
+		<mkdir dir="${target.dir}" />
+	</target>
+	
+	<target name="compile" depends="init">
+		<javac srcdir="${src.dir}" destdir="${target.dir}" />
+	</target>
+	
+	<target name="jar" depends="compile">
+		<jar jarfile="${basedir}/alamode.jar">
+			<fileset dir="${target.dir}" />
+			<manifest>
+				<attribute name="Built-By" value="Hit the Sticks, LLC"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="ud" depends="clean,jar">
+		<copy file="${basedir}/alamode.jar" todir="${basedir}/scripts" />
+	</target>
 </project>

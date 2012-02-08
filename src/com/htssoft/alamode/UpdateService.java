@@ -13,6 +13,7 @@ import java.util.Properties;
 
 import com.htssoft.alamode.files.FileSignature;
 import com.htssoft.alamode.files.SignatureCheckPipeline;
+import com.htssoft.alamode.network.DownloadPipeline;
 import com.htssoft.alamode.network.FakeDownloadPipeline;
 import com.htssoft.alamode.network.UpdateSite;
 
@@ -28,8 +29,9 @@ public class UpdateService {
 		fis.close();
 		
 		updateSite = new UpdateSite(p.getProperty("update.site"));
-		downloadDir = new File(".", p.getProperty("update.download.dir"));
+		
 		syncRoot = new File(System.getProperty("user.dir"));
+		downloadDir = syncRoot;
 	}
 	
 	protected int getLocalVersion() throws IOException {
@@ -44,8 +46,14 @@ public class UpdateService {
 	 * */
 	public boolean startupCheck() throws IOException{
 		int remoteVersion = updateSite.getRemoteVersion();
-		
-		return remoteVersion > getLocalVersion();
+		int localVersion = -1;
+		try {
+			localVersion = getLocalVersion();
+		}
+		catch (IOException ex){
+			
+		}
+		return remoteVersion > localVersion;
 	}
 	
 	/**
@@ -53,13 +61,12 @@ public class UpdateService {
 	 * @throws IOException 
 	 * */
 	public void doUpdate() throws IOException{
-		if (downloadDir.exists()){
-			deleteRecursive(downloadDir);
+		if (!downloadDir.exists()){
+			return;
 		}
-		downloadDir.mkdir();
 		
 		SignatureCheckPipeline sigCheck = new SignatureCheckPipeline(syncRoot, 4);
-		FakeDownloadPipeline download = new FakeDownloadPipeline(updateSite, downloadDir, 4, sigCheck.getOutputQueue());
+		DownloadPipeline download = new DownloadPipeline(updateSite, downloadDir, 4, sigCheck.getOutputQueue());
 		
 		URL indexURL = updateSite.getIndexURL();
 		HttpURLConnection conn = (HttpURLConnection) indexURL.openConnection();

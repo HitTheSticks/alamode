@@ -3,6 +3,7 @@ package com.htssoft.alamode.files;
 import java.io.File;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.htssoft.alamode.threading.FinishableQueue;
 import com.htssoft.alamode.threading.ThreadingUtils;
 
 public class RecursiveIndexer {
@@ -30,7 +31,7 @@ public class RecursiveIndexer {
 		signatures.awaitFinished();
 	}
 	
-	public LinkedBlockingQueue<FileSignature> getIndex(){
+	public FinishableQueue<FileSignature> getIndex(){
 		return signatures.getOutputQueue();
 	}
 	

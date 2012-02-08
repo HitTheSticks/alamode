@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.htssoft.alamode.threading.FinishableQueue;
+
 public class FakeDownloadPipeline extends DownloadPipeline {
 
-	public FakeDownloadPipeline(UpdateSite site, File downloadDirectory, int nThreads, LinkedBlockingQueue<String> input) {
+	public FakeDownloadPipeline(UpdateSite site, File downloadDirectory, int nThreads, FinishableQueue<String> input) {
 		super(site, downloadDirectory, nThreads, input);
 	}
 	

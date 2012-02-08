@@ -2,21 +2,23 @@ package com.htssoft.alamode.threading;
 
 import java.util.Collection;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A threaded pipeline. You provide the kernel.
  * */
 public abstract class ThreadedPipeline<WORK_T, OUT_T> {
-	protected LinkedBlockingQueue<WORK_T> input;
-	protected LinkedBlockingQueue<OUT_T> output = new LinkedBlockingQueue<OUT_T>();
-	
+	protected FinishableQueue<WORK_T> input;
+	protected FinishableQueue<OUT_T> output = new FinishableQueue<OUT_T>();
+		
 	protected Thread[] threads;
 	
 	public ThreadedPipeline(int nThreads){
-		this(nThreads, new LinkedBlockingQueue<WORK_T>());
+		this(nThreads, new FinishableQueue<WORK_T>());
 	}
 	
-	public ThreadedPipeline(int nThreads, LinkedBlockingQueue<WORK_T> input){
+	public ThreadedPipeline(int nThreads, FinishableQueue<WORK_T> input){
 		this.input = input;
 		threads = new Thread[nThreads];
 		for (int i = 0; i < threads.length; i++){
@@ -36,7 +38,7 @@ public abstract class ThreadedPipeline<WORK_T, OUT_T> {
 	/**
 	 * Get the output queue.
 	 * */
-	public LinkedBlockingQueue<OUT_T> getOutputQueue(){
+	public FinishableQueue<OUT_T> getOutputQueue(){
 		return output;
 	}
 	
@@ -58,24 +60,10 @@ public abstract class ThreadedPipeline<WORK_T, OUT_T> {
 	 * Wait until the input queue is empty.
 	 * */
 	public void awaitFinished(){
-		if (input.isEmpty()){
-			return;
-		}
-		
-		synchronized (input){
-			while (!input.isEmpty()){
-				try {
-					input.wait();
-				} catch (InterruptedException ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
+		input.await();
 	}
-		
+	
 	abstract protected OUT_T processItem(WORK_T item);
-	
-	
 	
 	protected class Processor implements Runnable {
 		public void run(){
@@ -91,11 +79,7 @@ public abstract class ThreadedPipeline<WORK_T, OUT_T> {
 					if (outItem != null){
 						output.add(outItem);
 					}
-					if (input.isEmpty()){
-						synchronized (input){
-							input.notifyAll();
-						}
-					}
+					input.finishedItem();
 				}
 		}
 	}

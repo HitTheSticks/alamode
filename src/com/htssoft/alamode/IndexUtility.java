@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import com.htssoft.alamode.files.FileSignature;
 import com.htssoft.alamode.files.RecursiveIndexer;
+import com.htssoft.alamode.threading.FinishableQueue;
 
 public class IndexUtility {
 	protected static File syncRoot;
@@ -25,7 +26,7 @@ public class IndexUtility {
 		
 		for (int i = 0; i < args.length; i++){
 			File f = new File(syncRoot, args[i]);
-			signatures.addAll(processIndexTarget(f));
+			processIndexTarget(f).copyContents(signatures);
 		}
 		
 		try {
@@ -35,7 +36,7 @@ public class IndexUtility {
 		}
 	}
 	
-	protected static Collection<FileSignature> processIndexTarget(File target){
+	protected static FinishableQueue<FileSignature> processIndexTarget(File target){
 		RecursiveIndexer indexer = new RecursiveIndexer(syncRoot, target);
 		indexer.go();
 		return indexer.getIndex();

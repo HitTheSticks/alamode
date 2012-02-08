@@ -9,13 +9,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.htssoft.alamode.threading.FinishableQueue;
 import com.htssoft.alamode.threading.ThreadedPipeline;
 
 public class DownloadPipeline extends ThreadedPipeline<String, Object>{
 	protected File downloadDirectory;
 	protected UpdateSite site;
 	
-	public DownloadPipeline(UpdateSite site, File downloadDirectory, int nThreads, LinkedBlockingQueue<String> input) {
+	public DownloadPipeline(UpdateSite site, File downloadDirectory, int nThreads, FinishableQueue<String> input) {
 		super(nThreads, input);
 		this.downloadDirectory = downloadDirectory;
 		this.site = site;
@@ -37,6 +38,7 @@ public class DownloadPipeline extends ThreadedPipeline<String, Object>{
 	
 	
 	protected void download(URL url, String filename) throws IOException{
+		System.out.println(url.toString());
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		InputStream in = conn.getInputStream();
 		
