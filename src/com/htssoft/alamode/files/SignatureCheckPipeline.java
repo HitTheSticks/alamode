@@ -6,6 +6,10 @@ import java.security.NoSuchAlgorithmException;
 
 import com.htssoft.alamode.threading.ThreadedPipeline;
 
+/**
+ * A pipeline that checks FileSignatures against local files, and
+ * outputs (relative) filenames that differ.
+ * */
 public class SignatureCheckPipeline extends ThreadedPipeline<FileSignature, String> {
 	protected ThreadLocal<FileHasher> hasher = new ThreadLocal<FileHasher>(){
 		public FileHasher initialValue(){

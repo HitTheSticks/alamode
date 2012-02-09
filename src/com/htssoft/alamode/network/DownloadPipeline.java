@@ -8,6 +8,9 @@ import java.net.URL;
 import com.htssoft.alamode.threading.FinishableQueue;
 import com.htssoft.alamode.threading.ThreadedPipeline;
 
+/**
+ * A pipeline that downloads items directly over existing files.
+ * */
 public class DownloadPipeline extends ThreadedPipeline<String, Object>{
 	protected File downloadDirectory;
 	protected UpdateSite site;

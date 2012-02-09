@@ -14,14 +14,23 @@ import java.net.URL;
 public class UpdateSite {
 	protected String urlFragment;
 	
+	/**
+	 * Create an UpdateSite from the url fragment specifying it.
+	 * */
 	public UpdateSite(String updateSiteURLFragment){
 		urlFragment = updateSiteURLFragment;
 	}
 	
+	/**
+	 * Get the URL of a distribution file.
+	 * */
 	public URL getFileURL(String filename) throws MalformedURLException{
 		return new URL(String.format("%s/%s", urlFragment, filename));
 	}
 	
+	/**
+	 * Get the remote version.
+	 * */
 	public String getRemoteVersion() throws IOException {
 		URL versionURL = getFileURL("version");
 		
@@ -45,6 +54,9 @@ public class UpdateSite {
 		return getFileURL("alamode.index");
 	}
 	
+	/**
+	 * Useless unit test.
+	 * */
 	public static void main(String[] args){
 		UpdateSite us = new UpdateSite("http://localhost/updates");
 		try {

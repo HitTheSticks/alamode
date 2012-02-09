@@ -6,6 +6,9 @@ import java.security.NoSuchAlgorithmException;
 
 import com.htssoft.alamode.threading.ThreadedPipeline;
 
+/**
+ * A pipeline that computes signatures.
+ * */
 public class SignaturePipeline extends ThreadedPipeline<File, FileSignature> {
 	protected ThreadLocal<FileHasher> hasher = new ThreadLocal<FileHasher>(){
 		public FileHasher initialValue(){

@@ -18,10 +18,16 @@ import sun.nio.ch.DirectBuffer;
 public class FileHasher {
 	protected MessageDigest hashImpl;
 	
+	/**
+	 * Initialize the md5 implementation.
+	 * */
 	public void init() throws NoSuchAlgorithmException {
 		hashImpl = MessageDigest.getInstance("md5");
 	}
 	
+	/**
+	 * Hashes a file into a FileSignature.
+	 * */
 	public FileSignature hashFile(File syncRoot, File queryFile) throws IOException {
 		if (!queryFile.exists() || queryFile.length() == 0){
 			return new FileSignature(Filenames.relativePath(syncRoot, queryFile), 0, "");
@@ -61,6 +67,9 @@ public class FileHasher {
 		return retval;
 	}
 	
+	/**
+	 * A trivial main function that hashes a given file in the current directory.
+	 * */
 	public static void main(String[] args){
 		FileHasher fh = new FileHasher();
 		

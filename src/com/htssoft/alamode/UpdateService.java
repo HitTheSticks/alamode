@@ -14,15 +14,24 @@ import com.htssoft.alamode.files.FileSignature;
 import com.htssoft.alamode.files.SignatureCheckPipeline;
 import com.htssoft.alamode.network.DownloadPipeline;
 import com.htssoft.alamode.network.Downloader;
-import com.htssoft.alamode.network.FakeDownloadPipeline;
 import com.htssoft.alamode.network.UpdateSite;
 
+/**
+ * This implements the client-side synchronization facility.
+ * */
 public class UpdateService {
 	protected UpdateSite updateSite;
 	protected File downloadDir;
 	protected File syncRoot;
 	
-	public UpdateService(String updatePropertiesFilename) throws IOException{
+	/**
+	 * Create a new UpdateService.
+	 * 
+	 * @param rootDirectory the root directory to synchronize.
+	 * @param updatePropertiesFilename a path (absolute, relative, whatever) to the alamode.props file defining
+	 * 	the update site parameters.
+	 * */
+	public UpdateService(File rootDirectory, String updatePropertiesFilename) throws IOException{
 		Properties p = new Properties();
 		FileInputStream fis = new FileInputStream(updatePropertiesFilename);
 		p.load(fis);
@@ -30,11 +39,16 @@ public class UpdateService {
 		
 		updateSite = new UpdateSite(p.getProperty("update.site"));
 		
-		syncRoot = new File(System.getProperty("user.dir"));
+		syncRoot = rootDirectory;
 		downloadDir = syncRoot;
 	}
 	
-	protected String getLocalVersion() throws IOException{
+	/**
+	 * Get the local version. This is an md5 hash of the
+	 * alamode.index in the local sync directory. Or, an 
+	 * empty string if the file doesn't exist.
+	 * */
+	public String getLocalVersion() throws IOException{
 		FileHasher hasher = new FileHasher();
 		try {
 			hasher.init();
@@ -48,22 +62,25 @@ public class UpdateService {
 	}
 	
 	/**
-	 * Is the remote version greater than the local version?
+	 * Is the local version different from the update site's version?
 	 * */
-	public boolean startupCheck() throws IOException{
+	public boolean remoteVersionMismatch() throws IOException{
 		String remoteVersion = updateSite.getRemoteVersion();
 		String localVersion = getLocalVersion();
 		
 		return !remoteVersion.equals(localVersion);
 	}
 	
+	/**
+	 * Downloads the remote alamode.index.
+	 * */
 	public void getIndex() throws IOException{
 		Downloader.download(syncRoot, updateSite.getIndexURL(), "alamode.index");
 	}
 	
 	/**
-	 * Do an update into the local temporary location.
-	 * @throws IOException 
+	 * Scans all files listed by alamode.index, and downloads all files whose
+	 * md5 differs from the indexed hash. 
 	 * */
 	public void doUpdate() throws IOException{
 		if (!downloadDir.exists()){
@@ -73,7 +90,7 @@ public class UpdateService {
 		SignatureCheckPipeline sigCheck = new SignatureCheckPipeline(syncRoot, 4);
 		DownloadPipeline download = new DownloadPipeline(updateSite, downloadDir, 4, sigCheck.getOutputQueue());
 		
-		BufferedReader br = new BufferedReader(new FileReader("alamode.index"));
+		BufferedReader br = new BufferedReader(new FileReader(new File(syncRoot, "alamode.index")));
 		String line;
 		
 		while ((line = br.readLine()) != null){
@@ -113,14 +130,12 @@ public class UpdateService {
 
 	
 	/**
-	 * Runs a default update sweep on the local directory.
-	 * 
-	 * Perhaps useful on its own.
+	 * This runs a complete update cycle on the current working directory.
 	 * */
 	public static void main(String[] args){
 		try {
-			UpdateService us = new UpdateService("alamode.prop");
-			boolean doUpdate = us.startupCheck();
+			UpdateService us = new UpdateService(new File(System.getProperty("user.dir")), "alamode.prop");
+			boolean doUpdate = us.remoteVersionMismatch();
 			if (doUpdate){
 				us.getIndex();
 			}

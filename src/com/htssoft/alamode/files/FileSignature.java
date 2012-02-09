@@ -9,6 +9,9 @@ public class FileSignature implements Comparable<FileSignature>{
 	protected final long length;
 	protected final String md5;
 	
+	/**
+	 * Creates a FileSignature from a comma-separated list of name, length, md5.
+	 * */
 	public FileSignature(String line){
 		String[] splits = line.split(",");
 		name = splits[0].trim();
@@ -21,12 +24,18 @@ public class FileSignature implements Comparable<FileSignature>{
 		}
 	}
 	
+	/**
+	 * Creates a file signature from name, length, and md5.
+	 * */
 	public FileSignature(String name, long length, String md5){
 		this.name = name.replace('\\', '/');
 		this.length = length;
 		this.md5 = md5;
 	}
 	
+	/**
+	 * FileSignatures are equal only if name, length, and md5 are all equal.
+	 * */
 	public boolean equals(FileSignature o){
 		return this.name.equals(o.name) &&
 			   this.length == o.length &&
@@ -37,18 +46,30 @@ public class FileSignature implements Comparable<FileSignature>{
 		return md5.hashCode();
 	}
 	
+	/**
+	 * The name of the file, relative to the synchronization root.
+	 * */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * The length of the file in bytes.
+	 * */
 	public long getLength() {
 		return length;
 	}
 
+	/**
+	 * The md5 string signature of the file, in hex.
+	 * */
 	public String getMd5() {
 		return md5;
 	}
 	
+	/**
+	 * A comma-separated list describing the signature.
+	 * */
 	public String toString(){
 		return String.format("%s, %d, %s", name, length, md5);
 	}

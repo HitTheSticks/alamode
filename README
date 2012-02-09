@@ -4,10 +4,4 @@ PLEASE NOTE: THERE ARE NUMEROUS THINGS NOT WORKING RIGHT NOW.
 
 DO NOT USE A LA MODE YET.
 
-Usage is fairly simple:
-
-1) Put your distribution files in a directory on a publicly accessible web server.
-2) cd to that directory.
-3) Run 'alamode_index' with the set of files and subdirectories you want included in the index.
-   e.g. 'alamode_index program.jar resources assets splash.png'
-5...203) Integrate UpdateService into your client program's architecture. 
+Please read ./manual.txt for an overview of features, design, and use.

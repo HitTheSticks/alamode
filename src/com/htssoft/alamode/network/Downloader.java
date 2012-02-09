@@ -7,7 +7,15 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * Static class holding a download function.
+ * */
 public class Downloader {
+	
+	/**
+	 * Downloads the file pointed to by the given URL into the path specified by the downloadDirectory
+	 * and the relative filename.
+	 * */
 	public static void download(File downloadDirectory, URL url, String filename) throws IOException{
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		InputStream in = conn.getInputStream();

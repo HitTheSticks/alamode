@@ -3,10 +3,12 @@ package com.htssoft.alamode.network;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import com.htssoft.alamode.threading.FinishableQueue;
 
+/**
+ * A testing mock that simply prints out what it *would* download.
+ * */
 public class FakeDownloadPipeline extends DownloadPipeline {
 
 	public FakeDownloadPipeline(UpdateSite site, File downloadDirectory, int nThreads, FinishableQueue<String> input) {

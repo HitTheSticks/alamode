@@ -11,6 +11,9 @@ import com.htssoft.alamode.files.FileSignature;
 import com.htssoft.alamode.files.RecursiveIndexer;
 import com.htssoft.alamode.threading.FinishableQueue;
 
+/**
+ * This class implements a tool to index files for an alamode update site.
+ * */
 public class IndexUtility {
 	protected static File syncRoot;
 	
@@ -36,12 +39,19 @@ public class IndexUtility {
 		}
 	}
 	
+	/**
+	 * Index one sync target.
+	 * */
 	protected static FinishableQueue<FileSignature> processIndexTarget(File target){
 		RecursiveIndexer indexer = new RecursiveIndexer(syncRoot, target);
 		indexer.go();
 		return indexer.getIndex();
 	}
 	
+	/**
+	 * Sort the index according to md5 sum, and write it out to "alamode.index" in the 
+	 * current directory.
+	 * */
 	protected static void writeIndex(List<FileSignature> signatures) throws IOException{
 		FileWriter writer = new FileWriter("alamode.index");
 		Collections.sort(signatures);
@@ -50,7 +60,5 @@ public class IndexUtility {
 			writer.append("\n");
 		}
 		writer.close();
-		
-		
 	}
 }
