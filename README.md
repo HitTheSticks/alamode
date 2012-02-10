@@ -5,7 +5,7 @@ PLEASE NOTE: a la mode update is still in ALPHA status. Do not use this in produ
 Please read ./manual.md for an overview of features, design, and use.
 
 
-_Anticipated Questions_
+__Anticipated Questions__
 
 Q. Does it work, in the sense that I can use it to update some software?
 
