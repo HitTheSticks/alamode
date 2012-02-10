@@ -16,8 +16,7 @@ public class FakeDownloadPipeline extends DownloadPipeline {
 	}
 	
 	protected void download(URL url, String filename) throws IOException{
-		System.out.println(url.toString());
 		File outfile = new File(downloadDirectory, filename);
-		System.out.println("Would Download: " + outfile.getCanonicalPath());
+		System.out.println(String.format("Would Download %s -> %s", url.toString(), outfile.getCanonicalPath()));
 	}
 }

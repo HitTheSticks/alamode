@@ -14,12 +14,15 @@ import com.htssoft.alamode.files.FileSignature;
 import com.htssoft.alamode.files.SignatureCheckPipeline;
 import com.htssoft.alamode.network.DownloadPipeline;
 import com.htssoft.alamode.network.Downloader;
+import com.htssoft.alamode.network.FakeDownloadPipeline;
 import com.htssoft.alamode.network.UpdateSite;
 
 /**
  * This implements the client-side synchronization facility.
  * */
 public class UpdateService {
+	public static boolean FAKE_RUN = false;
+	
 	protected UpdateSite updateSite;
 	protected File downloadDir;
 	protected File syncRoot;
@@ -88,7 +91,14 @@ public class UpdateService {
 		}
 		
 		SignatureCheckPipeline sigCheck = new SignatureCheckPipeline(syncRoot, 4);
-		DownloadPipeline download = new DownloadPipeline(updateSite, downloadDir, 4, sigCheck.getOutputQueue());
+		
+		DownloadPipeline download;
+		if (!FAKE_RUN){
+			download = new DownloadPipeline(updateSite, downloadDir, 4, sigCheck.getOutputQueue());
+		}
+		else {
+			download = new FakeDownloadPipeline(updateSite, downloadDir, 4, sigCheck.getOutputQueue());
+		}
 		
 		BufferedReader br = new BufferedReader(new FileReader(new File(syncRoot, "alamode.index")));
 		String line;
@@ -133,6 +143,11 @@ public class UpdateService {
 	 * This runs a complete update cycle on the current working directory.
 	 * */
 	public static void main(String[] args){
+		for (String s : args){
+			if (s.equals("-f")){
+				UpdateService.FAKE_RUN = true;
+			}
+		}
 		try {
 			UpdateService us = new UpdateService(new File(System.getProperty("user.dir")), "alamode.prop");
 			boolean doUpdate = us.remoteVersionMismatch();
