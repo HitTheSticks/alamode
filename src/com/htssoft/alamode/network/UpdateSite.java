@@ -9,7 +9,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.regex.Pattern;
 
 /**
  * Describes an update location.
@@ -34,8 +33,11 @@ public class UpdateSite {
 		siteURL = new URL(urlFragment);
 	}
 	
+	/**
+	 * Turn filenames into url-encoded legal filenames.
+	 * */
 	protected String sanitizePath(String path){
-		if (path.matches("[\\w/]+")){
+		if (path.matches("[\\w/\\.]+")){
 			return path;
 		}
 		String[] splits = path.split("/");
@@ -102,14 +104,13 @@ public class UpdateSite {
 	public static void main(String[] args){
 		try {
 			UpdateSite us = new UpdateSite("http://localhost/updates/");
-			URL u = us.getFileURL("assets/grid/stripe_ fog.png");
+			URL u = us.getFileURL("assets/grid/stripe_fog.png");
 			System.out.println(u.toString());
 			System.out.println(us.getRemoteVersion());
 			
 		} catch (MalformedURLException ex) {
 			ex.printStackTrace();
 		} catch (IOException ex) {
-			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}
 	}
