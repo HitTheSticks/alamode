@@ -32,5 +32,7 @@ public class Downloader {
 			fos.write(buffer, 0, read);	
 		}
 		fos.close();
+		in.close();
+		conn.disconnect();
 	}
 }
