@@ -1,9 +1,6 @@
 package com.htssoft.alamode.threading;
 
 import java.util.Collection;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A threaded pipeline. You provide the kernel.
