@@ -26,6 +26,7 @@ public class UpdateService {
 	protected UpdateSite updateSite;
 	protected File downloadDir;
 	protected File syncRoot;
+	protected ProgressPrinter progressCallback;
 	
 	/**
 	 * Create a new UpdateService.
@@ -44,6 +45,13 @@ public class UpdateService {
 		
 		syncRoot = rootDirectory;
 		downloadDir = syncRoot;
+	}
+	
+	/**
+	 * Set the progress printer.
+	 * */
+	public void setProgressCallback(ProgressPrinter callback){
+		progressCallback = callback;
 	}
 	
 	/**
@@ -108,12 +116,17 @@ public class UpdateService {
 				continue;
 			}
 			try {
-				sigCheck.submitWorkItem(new FileSignature(line));
+				FileSignature sig = new FileSignature(line);
+				if (progressCallback != null){
+					progressCallback.printProgress(sig.getName());
+				}
+				sigCheck.submitWorkItem(sig);
 			}
 			catch (Exception ex){
 				System.out.println("ERROR reading: " + line);
 			}
 		}
+		br.close();
 		sigCheck.awaitFinished();
 		download.awaitFinished();
 	}
