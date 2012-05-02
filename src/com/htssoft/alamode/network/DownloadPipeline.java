@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.htssoft.alamode.ProgressPrinter;
 import com.htssoft.alamode.threading.FinishableQueue;
 import com.htssoft.alamode.threading.ThreadedPipeline;
 
@@ -14,11 +15,13 @@ import com.htssoft.alamode.threading.ThreadedPipeline;
 public class DownloadPipeline extends ThreadedPipeline<String, Object>{
 	protected File downloadDirectory;
 	protected UpdateSite site;
+	protected ProgressPrinter progressCallback;
 	
-	public DownloadPipeline(UpdateSite site, File downloadDirectory, int nThreads, FinishableQueue<String> input) {
+	public DownloadPipeline(UpdateSite site, File downloadDirectory, int nThreads, FinishableQueue<String> input, ProgressPrinter progressCallback) {
 		super(nThreads, input);
 		this.downloadDirectory = downloadDirectory;
 		this.site = site;
+		this.progressCallback = progressCallback;
 	}
 
 	@Override
@@ -37,6 +40,9 @@ public class DownloadPipeline extends ThreadedPipeline<String, Object>{
 	
 	
 	protected void download(URL url, String filename) throws IOException {
+		if (progressCallback != null){
+			progressCallback.printProgress(filename);
+		}
 		Downloader.download(downloadDirectory, url, filename);
 	}
 }

@@ -12,7 +12,7 @@ import com.htssoft.alamode.threading.FinishableQueue;
 public class FakeDownloadPipeline extends DownloadPipeline {
 
 	public FakeDownloadPipeline(UpdateSite site, File downloadDirectory, int nThreads, FinishableQueue<String> input) {
-		super(site, downloadDirectory, nThreads, input);
+		super(site, downloadDirectory, nThreads, input, null);
 	}
 	
 	protected void download(URL url, String filename) throws IOException{

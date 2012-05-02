@@ -69,6 +69,9 @@ public class RecursiveIndexer {
 	 * Add a file to the signature pipeline.
 	 * */
 	protected void indexFile(File f){
+		if (f.getAbsolutePath().contains(" ")){
+			System.err.println("Filenames with spaces are not supported. This index is corrupt now.");
+		}
 		signatures.submitWorkItem(f);
 	}
 	

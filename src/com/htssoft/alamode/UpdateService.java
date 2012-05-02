@@ -102,7 +102,7 @@ public class UpdateService {
 		
 		DownloadPipeline download;
 		if (!FAKE_RUN){
-			download = new DownloadPipeline(updateSite, downloadDir, 4, sigCheck.getOutputQueue());
+			download = new DownloadPipeline(updateSite, downloadDir, 4, sigCheck.getOutputQueue(), progressCallback);
 		}
 		else {
 			download = new FakeDownloadPipeline(updateSite, downloadDir, 4, sigCheck.getOutputQueue());
@@ -117,9 +117,6 @@ public class UpdateService {
 			}
 			try {
 				FileSignature sig = new FileSignature(line);
-				if (progressCallback != null){
-					progressCallback.printProgress(sig.getName());
-				}
 				sigCheck.submitWorkItem(sig);
 			}
 			catch (Exception ex){
